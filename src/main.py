@@ -1,6 +1,16 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from .controllers import user_controller
+from .databases.bank_db import create_db
+
+
+# Database and other configs
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db()
+    yield
 
 
 # App Instance
@@ -14,6 +24,7 @@ def create_app():
     """,
         openapi_tags='',
         openapi_url='/doc',  # /docs - Swagger, /redoc
+        lifespan=lifespan,
     )
 
     app.include_router(user_controller.router)
