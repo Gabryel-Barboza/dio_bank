@@ -1,7 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
-from src.models.user_model import User
-from src.schemas.user_schemas import UserUpdateModel
+from src.models.user_model import (
+    User,
+    UserCreateModel,
+    UserPublicModel,
+    UserUpdateModel,
+)
 from src.services.user_services import UserService
 from src.utils.exceptions import RegistryNotFoundException
 
@@ -13,9 +17,10 @@ usr_service = UserService()
     '/',
     status_code=status.HTTP_200_OK,
 )
-async def get_users() -> list[User] | None:
-    users = await usr_service.read_users()
-
+async def get_users(
+    skip: int = 0, limit: int = Query(default=100, le=100)
+) -> list[UserPublicModel] | None:
+    users = await usr_service.read_users(skip, limit)
     return users
 
 
@@ -23,17 +28,23 @@ async def get_users() -> list[User] | None:
     '/{user_id}',
     status_code=status.HTTP_200_OK,
 )
-async def get_user_by_id(user_id: int) -> User | None:
-    user = await usr_service.read_users(user_id=user_id)
+async def get_user_by_id(user_id: int) -> UserPublicModel | None:
+    try:
+        user = await usr_service.read_users(user_id=user_id)
 
-    return user
+        return user
+    except RegistryNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
+        )
 
 
 @router.post(
     '/',
     status_code=status.HTTP_201_CREATED,
 )
-async def create_user(user: User) -> User:
+async def create_user(user: UserCreateModel) -> UserPublicModel:
+    user = User.model_validate(user)  # Convertendo para model User
     await usr_service.insert_user(user)
 
     return user
@@ -43,7 +54,7 @@ async def create_user(user: User) -> User:
     '/{user_id}',
     status_code=status.HTTP_201_CREATED,
 )
-async def update_user(user_id: int, user: User) -> None:
+async def update_user(user_id: int, user: UserCreateModel) -> None:
     try:
         await usr_service.update_user(user_id, user.model_dump())
     except RegistryNotFoundException:
@@ -56,7 +67,7 @@ async def update_user(user_id: int, user: User) -> None:
 
 @router.patch(
     '/{user_id}',
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def update_user_fields(user_id: int, fields: UserUpdateModel) -> None:
     try:
