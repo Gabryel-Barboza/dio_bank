@@ -30,3 +30,7 @@ def create_app():
     app.include_router(user_controller.router)
 
     return app
+
+
+if __name__ == '__main__':
+    create_app()
