@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from .controllers import user_controller
+from .controllers import account_controller, user_controller
 from .databases.bank_db import create_db
 
 
@@ -28,6 +28,7 @@ def create_app():
     )
 
     app.include_router(user_controller.router)
+    app.include_router(account_controller.router)
 
     return app
 

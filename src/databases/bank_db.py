@@ -1,6 +1,7 @@
-from sqlmodel import SQLModel, create_engine, text
+from sqlmodel import Session, SQLModel, create_engine, text
 
 # Instanciando banco
+# TODO: carregar configurações via .env
 database_url = 'sqlite:///./bank.db'
 debug = True
 connect_args = {'check_same_thread': False}
@@ -16,3 +17,8 @@ def create_db():
     # Habilita suporte para restrições com Foreign key no SQLite
     with engine.connect() as connection:
         connection.execute(text('PRAGMA foreign_keys=ON'))
+
+
+def get_session():
+    with Session(engine) as session:
+        yield session
