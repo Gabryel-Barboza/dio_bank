@@ -57,10 +57,11 @@ class UserService:
     # Método para remover usuários.
     @staticmethod
     async def delete_user(session: Session, user_id: int) -> None:
-        user = session.get(user_id)
+        user = session.get(User, user_id)
 
         if user:
             session.delete(user)
             session.commit()
-
-        return
+            return
+        else:
+            raise RegistryNotFoundException

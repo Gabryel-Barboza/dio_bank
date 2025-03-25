@@ -41,12 +41,12 @@ async def get_user_by_id(
 ) -> UserPublicAccountsModel | None:
     try:
         user = await usr_service.read_users(session, user_id=user_id)
-
-        return user
     except RegistryNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
         )
+    else:
+        return user
 
 
 @router.post(
@@ -114,6 +114,10 @@ async def delete_user(
     session: Session = Depends(get_session),
     user_id: int,
 ) -> None:
-    await usr_service.delete_user(session, user_id)
-
+    try:
+        await usr_service.delete_user(session, user_id)
+    except RegistryNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
+        )
     return
