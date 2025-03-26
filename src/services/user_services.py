@@ -44,7 +44,7 @@ class UserService:
         user = session.get(User, user_id)
 
         if user:
-            if fields['password']:
+            if fields.get('password', None):
                 fields.update(hash_password(fields['password']))
 
             session.exec(update(User).where(User.c.user_id == user_id).values(**fields))

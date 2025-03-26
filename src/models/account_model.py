@@ -31,7 +31,13 @@ class Account(AccountBaseModel, table=True):
 
 
 class AccountCreateModel(AccountBaseModel):
-    id_user: int
+    pass
+
+
+class AccountPatchUpdateModel(SQLModel):
+    id_user: int | None = None
+    account_type: str | None = None
+    balance: Decimal | None = None
 
 
 class AccountPublicModel(AccountBaseModel):

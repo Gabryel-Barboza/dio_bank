@@ -53,6 +53,6 @@ class UserPublicModel(SQLModel):
     birth_date: str | None
 
 
-# Modelo com a lista de contas
+# Modelo com a lista de contas, evita recursão com Pydantic
 class UserPublicAccountsModel(UserPublicModel):
     accounts: list[AccountPublicModel] | None = []

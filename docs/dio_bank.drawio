@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="y7vnu0lgjoJo_eM7lG9_" name="Página-1">
-        <mxGraphModel dx="681" dy="575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="1189" dy="699" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -8,7 +8,7 @@
                     <mxGeometry y="340" width="820" height="8" as="geometry"/>
                 </mxCell>
                 <mxCell id="39" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="414" y="440" width="356" height="670" as="geometry"/>
+                    <mxGeometry x="414" y="440" width="356" height="700" as="geometry"/>
                 </mxCell>
                 <mxCell id="40" value="&lt;font&gt;Backend&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Times New Roman;fontSize=26;" parent="1" vertex="1">
                     <mxGeometry x="562" y="470" width="60" height="30" as="geometry"/>
@@ -44,7 +44,7 @@
                     <mxGeometry x="670" y="610" width="70" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="56" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="440" y="760" width="300" height="340" as="geometry"/>
+                    <mxGeometry x="440" y="760" width="300" height="350" as="geometry"/>
                 </mxCell>
                 <mxCell id="58" value="Services" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="560" y="770" width="60" height="30" as="geometry"/>
@@ -334,10 +334,10 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="182" value="Auth" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="461" y="1030" width="114" height="60" as="geometry"/>
+                    <mxGeometry x="455" y="1030" width="125" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="183" value="login" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="182" vertex="1">
-                    <mxGeometry y="30" width="114" height="30" as="geometry"/>
+                <mxCell id="183" value="authenticate_user" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="182" vertex="1">
+                    <mxGeometry y="30" width="125" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="186" value="auth_controller" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="450" y="650" width="70" height="30" as="geometry"/>

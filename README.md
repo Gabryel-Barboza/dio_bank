@@ -38,12 +38,14 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [] ? Unificar rotas de user Put e Patch ?
 - [x] Alterar modelos adicionando relacionamentos
 - [x] Criar schemas das rotas de User para refletir as entradas e saídas, com apenas os parâmetros necessários em cada rota
-- [] Implementar campo de senha em usuários e controlador de autenticação e login
+- [x] Implementar campo de senha em usuários e controlador de autenticação e login
 - [] Implementar verificação de username e senha no db para auth
 - [] Criar decorador de autenticação necessária para rotas
 - [] Implementar camada para transação a partir do controlador de Account
+- [] Implementar identificação global com UUID e identificação local com ID
 - [] Implementar rotas para manipular contas de usuário
 - [] Aprimorar conformidade com OpenAPI 3
 - [] Criar bateria de testes com Pytest
 - [] Criar módulo de configurações para .env
-- [] Refatorar código para deploy
+- [] Refatorar código para deploy:
+  - [] Padronizar estrutura do projeto com pacotes
