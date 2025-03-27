@@ -41,11 +41,25 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Implementar campo de senha em usuários e controlador de autenticação e login
 - [] Implementar verificação de username e senha no db para auth
 - [] Criar decorador de autenticação necessária para rotas
+- [x] Implementar rotas para manipular contas de usuário
+- [x] Criar exceptions para criação de contas com usuários inexistentes e para limite de contas excedido
+- [] Criar exceptions para integridade do banco de dados
 - [] Implementar camada para transação a partir do controlador de Account
+- [] Implementar métodos de saque e depósito no controlador de Account
+- [] Implementar decorador para criar log de transação
 - [] Implementar identificação global com UUID e identificação local com ID
-- [] Implementar rotas para manipular contas de usuário
+- [] Criar handler principal para exceptions comuns
 - [] Aprimorar conformidade com OpenAPI 3
 - [] Criar bateria de testes com Pytest
 - [] Criar módulo de configurações para .env
+- [] Implementar migrações com Alembic
 - [] Refatorar código para deploy:
+
   - [] Padronizar estrutura do projeto com pacotes
+  - [] Instalar dependências adicionais para PostgreSQL
+  - [] Testar projeto em contêiner com PostgreSQL
+
+- [] Criar mais tipos de transação/operação
+- [] Implementar restrições para as operações de saque e depósito
+- [] Criar front-end
+- [] Integrar front-end com a API

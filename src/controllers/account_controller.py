@@ -6,21 +6,42 @@ from src.models.account_model import (
     AccountPatchUpdateModel,
     AccountPublicModel,
 )
+from src.models.transaction_model import TransactionPublicModel
 from src.services.account_services import AccountServices
+from src.services.transaction_services import TransactionServices
 from src.utils.exceptions import (
     ExceedUserAccountsException,
+    InsufficientBalanceException,
+    InvalidOperationException,
     RegistryNotFoundException,
     UserNotFoundException,
 )
 
 acc_services = AccountServices()
+transact_services = TransactionServices()
 
 # TODO: Implementar campos de UUID (global) e ID (local)
-# TODO: Criar rota para recuperar todas as contas
 router = APIRouter(prefix='/users', tags=['Account'])
 
+# Contas
 
-@router.get('/{user_id}/accounts/')
+
+@router.get(
+    '/accounts/',
+    status_code=status.HTTP_200_OK,
+)
+async def get_accounts(
+    session: Session = Depends(get_session),
+) -> list[AccountPublicModel] | None:
+    accounts = await acc_services.read_accounts(session)
+
+    return accounts
+
+
+@router.get(
+    '/{user_id}/accounts/',
+    status_code=status.HTTP_200_OK,
+)
 async def get_user_accounts(
     *,
     session: Session = Depends(get_session),
@@ -36,7 +57,10 @@ async def get_user_accounts(
         return accounts
 
 
-@router.get('/accounts/{account_id}/')
+@router.get(
+    '/accounts/{account_id}/',
+    status_code=status.HTTP_200_OK,
+)
 async def get_account_by_id(
     *,
     session: Session = Depends(get_session),
@@ -52,7 +76,10 @@ async def get_account_by_id(
         return account
 
 
-@router.post('/{user_id}/accounts/')
+@router.post(
+    '/{user_id}/accounts/',
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_account(
     *,
     session: Session = Depends(get_session),
@@ -134,13 +161,25 @@ async def delete_account(
     return
 
 
+# Transações
+
+
 @router.get('/accounts/{account_id}/transactions/')
 async def get_account_transactions(
     *,
     session: Session = Depends(get_session),
     account_id: int,
-):
-    pass
+) -> list[TransactionPublicModel]:
+    try:
+        transactions = await transact_services.read_transactions(
+            session, account_id=account_id
+        )
+    except RegistryNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='Account not found!'
+        )
+    else:
+        return transactions
 
 
 @router.get('/accounts/{account_id}/transactions/{transaction_id}')
@@ -148,5 +187,28 @@ async def get_account_transaction(
     *,
     session: Session = Depends(get_session),
     transaction_id: int,
+) -> TransactionPublicModel:
+    try:
+        transaction = await transact_services.read_transactions(
+            session, transaction_id=transaction_id
+        )
+    except RegistryNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='Transaction not found!'
+        )
+    else:
+        return transaction
+
+
+@router.post(
+    '/accounts/{account_id}/transactions/',
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_transaction(
+    *,
+    session: Session,
 ):
-    pass
+    try:
+        await transact_services.create_transaction()
+    except (InvalidOperationException, InsufficientBalanceException) as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=exc.msg)

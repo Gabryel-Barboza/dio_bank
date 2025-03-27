@@ -1,7 +1,9 @@
 from decimal import Decimal
+from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Column, Field, Relationship, SQLModel
+from sqlmodel import Enum as sa_enum
 
 # Resolve circular import, constante True apenas para IDEs. Com o interpretador direto é False
 if TYPE_CHECKING:
@@ -9,8 +11,16 @@ if TYPE_CHECKING:
     from .user_model import User
 
 
+class AccountType(Enum):
+    corrente = 'corrente'
+    poupanca = 'poupança'
+
+
 class AccountBaseModel(SQLModel):
-    account_type: str = Field(default='corrente')
+    account_type: AccountType | None = Field(
+        default=AccountType.corrente,
+        sa_column=Column(sa_enum(AccountType), nullable=False),
+    )
     balance: Decimal = Field(default=0, decimal_places=2)
 
 

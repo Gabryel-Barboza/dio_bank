@@ -1,4 +1,4 @@
-from sqlmodel import Session, select, update
+from sqlmodel import Session, select
 
 from src.models.user_model import User
 from src.utils.cryptography import hash_password
@@ -43,25 +43,27 @@ class UserService:
     async def update_user(session: Session, user_id: int, fields: dict) -> None:
         user = session.get(User, user_id)
 
-        if user:
-            if fields.get('password', None):
-                fields.update(hash_password(fields['password']))
-
-            session.exec(update(User).where(User.c.user_id == user_id).values(**fields))
-            session.commit()
-
-            return
-        else:
+        if not user:
             raise RegistryNotFoundException
+
+        if fields.get('password', None):
+            fields.update(hash_password(fields['password']))
+
+        user.sqlmodel_update(fields)
+        session.add(user)
+        session.commit()
+
+        return
 
     # Método para remover usuários.
     @staticmethod
     async def delete_user(session: Session, user_id: int) -> None:
         user = session.get(User, user_id)
 
-        if user:
-            session.delete(user)
-            session.commit()
-            return
-        else:
+        if not user:
             raise RegistryNotFoundException
+
+        session.delete(user)
+        session.commit()
+
+        return

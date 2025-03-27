@@ -11,7 +11,7 @@ class UserBaseModel(SQLModel):
     fullname: str
     username: str = Field(index=True, max_length=50, unique=True)
     address: str | None = Field(default=None)
-    cpf: str = Field(index=True, min_length=11, max_length=11)
+    cpf: str = Field(index=True, min_length=11, max_length=11, unique=True)
     birth_date: date | None = Field(default=None)
     password: str = Field(max_length=20)
 
@@ -23,6 +23,7 @@ class User(UserBaseModel, table=True):
     # Valor padrão None/Null, caso contrário ainda será necessário passar o dado na instância
     # Gerado pelo database, não pela instância
     id_user: int | None = Field(default=None, primary_key=True)
+    # Após hash a senha possui tamanho maior
     password: str = Field()
 
     accounts: list['Account'] = Relationship(
@@ -50,7 +51,7 @@ class UserPublicModel(SQLModel):
     username: str
     cpf: str
     address: str | None
-    birth_date: str | None
+    birth_date: date | None
 
 
 # Modelo com a lista de contas, evita recursão com Pydantic
