@@ -1,3 +1,4 @@
+import functools
 from decimal import Decimal
 
 from sqlmodel import Session, select
@@ -28,29 +29,51 @@ class TransactionServices:
         session.add(account)
 
     @staticmethod
-    def create_transaction_log(func, session: Session, *args, **kwargs) -> None:
-        log: Transaction = kwargs['transaction']
-        session.add(log)
-        func(*args, **kwargs)
-        session.commit()
+    def create_transaction_log() -> None:
+        # Decoradores não podem ser corrotinas, são executados na avaliação de código fonte
+        # Portanto, criar uma função síncrona wrapper para uma função assíncrona
+        def wrapper(func):
+            @functools.wraps(func)
+            async def wrapped(*args, **kwargs):
+                # Atualizar transação com o ID da conta recebido
+                kwargs['transaction'].update({'id_account': kwargs['id_account']})
 
-    @create_transaction_log
+                transaction = kwargs['transaction']
+                session: Session = kwargs['session']
+                log = Transaction.model_validate(transaction)
+
+                session.add(log)
+                await func(*args, **kwargs)
+                session.commit()
+
+            return wrapped
+
+        return wrapper
+
+    @create_transaction_log()
     async def create_transaction(
-        self, session: Session, account_id: int, transaction_type: int, *args, **kwargs
+        self, *, session: Session, transaction: dict, **kwargs
     ) -> None:
-        account = session.get(Account, account_id)
+        id_account = transaction['id_account']
+        account = session.get(Account, id_account)
+
+        if not account:
+            raise RegistryNotFoundException
+
+        transaction_type = transaction['transaction_type'].value
+        transaction_value = transaction['transaction_value']
 
         match transaction_type:
-            case 1:
-                return self._withdraw(session, account, *args, **kwargs)
-            case 2:
-                return self._deposit(session, account, *args, **kwargs)
+            case 'saque':
+                return await self._withdraw(session, account, transaction_value)
+            case 'depósito':
+                return await self._deposit(session, account, transaction_value)
             case _:
                 raise InvalidOperationException
 
     @staticmethod
     async def read_transactions(
-        session: Session, *, account_id: int = None, transaction_id: int = None
+        session: Session, *, id_account: int = None, transaction_id: int = None
     ) -> list[Transaction] | Transaction | None:
         if transaction_id:
             transaction = session.get(Transaction, transaction_id)
@@ -59,8 +82,8 @@ class TransactionServices:
                 raise RegistryNotFoundException
 
             return transaction
-        elif account_id:
-            account = session.get(Account, account_id)
+        elif id_account:
+            account = session.get(Account, id_account)
 
             if not account:
                 raise RegistryNotFoundException

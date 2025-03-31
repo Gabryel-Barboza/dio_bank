@@ -21,7 +21,7 @@ class AccountBaseModel(SQLModel):
         default=AccountType.corrente,
         sa_column=Column(sa_enum(AccountType), nullable=False),
     )
-    balance: Decimal = Field(default=0, decimal_places=2)
+    balance: Decimal = Field(default=Decimal(0), decimal_places=2)
 
 
 class Account(AccountBaseModel, table=True):

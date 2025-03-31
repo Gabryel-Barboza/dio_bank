@@ -8,8 +8,8 @@ O mesmo projeto está sendo desenvolvido com outros frameworks, veja as branches
 
 O objetivo deste desafio é desenvolver uma API com as seguintes funcionalidades:
 
-- [] **Cadastro de Transações**: Permita o cadastro de transações bancárias, como depósitos e saques.
-- [] **Exibição de Extrato**: Implemente um endpoint para exibir o extrato de uma conta, mostrando todas \* as transações realizadas.
+- [x] **Cadastro de Transações**: Permita o cadastro de transações bancárias, como depósitos e saques.
+- [x] **Exibição de Extrato**: Implemente um endpoint para exibir o extrato de uma conta, mostrando todas \* as transações realizadas.
 - [] **Autenticação com JWT**: Utilize JWT (JSON Web Tokens) para garantir que apenas usuários autenticados possam acessar os endpoints que exigem autenticação.
 
 ## Requisitos do Desafio
@@ -34,7 +34,7 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Adicionar modelo para transações
 - [x] Refatorar camadas para modularizar código
 - [x] Criar exception de registro não encontrado para controladores
-- [] Alterar modelos com os tipos de dados apropriados para campos específicos
+- [x] Alterar modelos com os tipos de dados apropriados para campos específicos
 - [] ? Unificar rotas de user Put e Patch ?
 - [x] Alterar modelos adicionando relacionamentos
 - [x] Criar schemas das rotas de User para refletir as entradas e saídas, com apenas os parâmetros necessários em cada rota
@@ -44,13 +44,17 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Implementar rotas para manipular contas de usuário
 - [x] Criar exceptions para criação de contas com usuários inexistentes e para limite de contas excedido
 - [] Criar exceptions para integridade do banco de dados
-- [] Implementar camada para transação a partir do controlador de Account
-- [] Implementar métodos de saque e depósito no controlador de Account
-- [] Implementar decorador para criar log de transação
+- [x] Implementar camada para transação a partir do controlador de Account
+- [x] Implementar métodos de saque e depósito no controlador de Account
+- [x] Implementar decorador para criar log de transação
 - [] Implementar identificação global com UUID e identificação local com ID
 - [] Criar handler principal para exceptions comuns
 - [] Aprimorar conformidade com OpenAPI 3
 - [] Criar bateria de testes com Pytest
+
+  - [] Testes para a funcionalidade esperada do controlador
+  - [] Testes para falhas do controlador
+
 - [] Criar módulo de configurações para .env
 - [] Implementar migrações com Alembic
 - [] Refatorar código para deploy:

@@ -20,7 +20,7 @@ class TransactionBaseModel(SQLModel):
     transaction_type: TransactionType = Field(
         sa_column=Column(sa_enum(TransactionType), nullable=False)
     )
-    transaction_value: Decimal
+    transaction_value: Decimal = Field(decimal_places=2)
 
 
 class Transaction(TransactionBaseModel, table=True):

@@ -6,7 +6,7 @@ from src.models.account_model import (
     AccountPatchUpdateModel,
     AccountPublicModel,
 )
-from src.models.transaction_model import TransactionPublicModel
+from src.models.transaction_model import TransactionCreateModel, TransactionPublicModel
 from src.services.account_services import AccountServices
 from src.services.transaction_services import TransactionServices
 from src.utils.exceptions import (
@@ -58,16 +58,16 @@ async def get_user_accounts(
 
 
 @router.get(
-    '/accounts/{account_id}/',
+    '/accounts/{id_account}/',
     status_code=status.HTTP_200_OK,
 )
 async def get_account_by_id(
     *,
     session: Session = Depends(get_session),
-    account_id: int,
+    id_account: int,
 ) -> AccountPublicModel:
     try:
-        account = await acc_services.read_accounts(session, account_id=account_id)
+        account = await acc_services.read_accounts(session, id_account=id_account)
     except RegistryNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail='Account not found!'
@@ -101,17 +101,17 @@ async def create_account(
 
 
 @router.put(
-    '/accounts/{account_id}/',
+    '/accounts/{id_account}/',
     status_code=status.HTTP_201_CREATED,
 )
 async def update_account(
     *,
     session: Session = Depends(get_session),
     fields: AccountCreateModel,
-    account_id: int,
+    id_account: int,
 ) -> None:
     try:
-        await acc_services.update_account(session, fields, account_id)
+        await acc_services.update_account(session, fields, id_account)
     except RegistryNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail='Account not found!'
@@ -121,18 +121,18 @@ async def update_account(
 
 
 @router.patch(
-    '/accounts/{account_id}/',
+    '/accounts/{id_account}/',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def update_account_fields(
     *,
     session: Session = Depends(get_session),
     fields: AccountPatchUpdateModel,
-    account_id: int,
+    id_account: int,
 ) -> None:
     try:
         await acc_services.update_account(
-            session, fields.model_dump(exclude_unset=True), account_id
+            session, fields.model_dump(exclude_unset=True), id_account
         )
     except RegistryNotFoundException:
         raise HTTPException(
@@ -143,16 +143,16 @@ async def update_account_fields(
 
 
 @router.delete(
-    '/accounts/{account_id}/',
+    '/accounts/{id_account}/',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_account(
     *,
     session: Session = Depends(get_session),
-    account_id: int,
+    id_account: int,
 ) -> None:
     try:
-        await acc_services.delete_account(session, account_id)
+        await acc_services.delete_account(session, id_account)
     except RegistryNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail='Account not found!'
@@ -164,15 +164,18 @@ async def delete_account(
 # Transações
 
 
-@router.get('/accounts/{account_id}/transactions/')
+@router.get(
+    '/accounts/{id_account}/transactions/',
+    status_code=status.HTTP_200_OK,
+)
 async def get_account_transactions(
     *,
     session: Session = Depends(get_session),
-    account_id: int,
+    id_account: int,
 ) -> list[TransactionPublicModel]:
     try:
         transactions = await transact_services.read_transactions(
-            session, account_id=account_id
+            session, id_account=id_account
         )
     except RegistryNotFoundException:
         raise HTTPException(
@@ -182,7 +185,10 @@ async def get_account_transactions(
         return transactions
 
 
-@router.get('/accounts/{account_id}/transactions/{transaction_id}')
+@router.get(
+    '/accounts/{id_account}/transactions/{transaction_id}',
+    status_code=status.HTTP_200_OK,
+)
 async def get_account_transaction(
     *,
     session: Session = Depends(get_session),
@@ -201,14 +207,26 @@ async def get_account_transaction(
 
 
 @router.post(
-    '/accounts/{account_id}/transactions/',
+    '/accounts/{id_account}/transactions/',
     status_code=status.HTTP_201_CREATED,
 )
 async def create_transaction(
     *,
-    session: Session,
+    session: Session = Depends(get_session),
+    id_account: int,
+    transaction: TransactionCreateModel,
+    transaction_args: dict = {},
 ):
     try:
-        await transact_services.create_transaction()
+        await transact_services.create_transaction(
+            session=session,
+            id_account=id_account,
+            transaction=transaction.model_dump(),
+            transaction_args=transaction_args,
+        )
     except (InvalidOperationException, InsufficientBalanceException) as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=exc.msg)
+    except RegistryNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='Transaction not found!'
+        )
