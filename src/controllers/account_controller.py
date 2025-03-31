@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from src.controllers.auth_controller import get_user_authentication
 from src.databases.bank_db import Session, get_session
 from src.models.account_model import (
     AccountCreateModel,
@@ -21,11 +22,12 @@ acc_services = AccountServices()
 transact_services = TransactionServices()
 
 # TODO: Implementar campos de UUID (global) e ID (local)
-router = APIRouter(prefix='/users', tags=['Account'])
+router = APIRouter(
+    prefix='/users', tags=['Account'], dependencies=[Depends(get_user_authentication)]
+)
+
 
 # Contas
-
-
 @router.get(
     '/accounts/',
     status_code=status.HTTP_200_OK,
@@ -83,7 +85,7 @@ async def get_account_by_id(
 async def create_account(
     *,
     session: Session = Depends(get_session),
-    account: AccountCreateModel,
+    account: AccountCreateModel = {},
     user_id: int,
 ) -> AccountPublicModel:
     try:
@@ -162,8 +164,6 @@ async def delete_account(
 
 
 # Transações
-
-
 @router.get(
     '/accounts/{id_account}/transactions/',
     status_code=status.HTTP_200_OK,

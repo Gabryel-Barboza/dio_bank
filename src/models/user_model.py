@@ -57,3 +57,9 @@ class UserPublicModel(SQLModel):
 # Modelo com a lista de contas, evita recursão com Pydantic
 class UserPublicAccountsModel(UserPublicModel):
     accounts: list[AccountPublicModel] | None = []
+
+
+# Modelo para autenticação de usuário
+class AccessToken(SQLModel):
+    access_token: str
+    token_type: str

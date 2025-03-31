@@ -1,5 +1,8 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from src.controllers.auth_controller import get_user_authentication
 from src.databases.bank_db import Session, get_session
 from src.models.user_model import (
     UserCreateModel,
@@ -25,6 +28,7 @@ async def get_users(
     limit: int = Query(
         default=100, le=100
     ),  # Recebe 100 por padrão, valida valores de no máximo 100
+    token: Annotated[str, Depends(get_user_authentication)],
 ) -> list[UserPublicAccountsModel] | None:
     users = await usr_service.read_users(session, skip, limit)
     return users
@@ -38,6 +42,7 @@ async def get_user_by_id(
     *,
     session: Session = Depends(get_session),
     user_id: int,
+    token: Annotated[str, Depends(get_user_authentication)],
 ) -> UserPublicAccountsModel | None:
     try:
         user = await usr_service.read_users(session, user_id=user_id)
@@ -71,6 +76,7 @@ async def update_user(
     *,
     session: Session = Depends(get_session),
     user_id: int,
+    token: Annotated[str, Depends(get_user_authentication)],
     user: UserCreateModel,
 ) -> None:
     try:
@@ -91,6 +97,7 @@ async def update_user_fields(
     *,
     session: Session = Depends(get_session),
     user_id: int,
+    token: Annotated[str, Depends(get_user_authentication)],
     fields: UserPatchUpdateModel,
 ) -> None:
     try:
@@ -113,6 +120,7 @@ async def delete_user(
     *,
     session: Session = Depends(get_session),
     user_id: int,
+    token: Annotated[str, Depends(get_user_authentication)],
 ) -> None:
     try:
         await usr_service.delete_user(session, user_id)

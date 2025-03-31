@@ -5,8 +5,6 @@ from sqlmodel import Session, SQLModel
 from src.settings import settings
 
 settings.database_url = 'sqlite:///'
-settings.environment = 'testing'
-settings.debug = False
 
 
 # Criando banco de dados

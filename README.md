@@ -39,8 +39,8 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Alterar modelos adicionando relacionamentos
 - [x] Criar schemas das rotas de User para refletir as entradas e saídas, com apenas os parâmetros necessários em cada rota
 - [x] Implementar campo de senha em usuários e controlador de autenticação e login
-- [] Implementar verificação de username e senha no db para auth
-- [] Criar decorador de autenticação necessária para rotas
+- [x] Implementar verificação de username e senha no db para auth
+- [x] Criar método de autenticação necessária para rotas
 - [x] Implementar rotas para manipular contas de usuário
 - [x] Criar exceptions para criação de contas com usuários inexistentes e para limite de contas excedido
 - [] Criar exceptions para integridade do banco de dados
@@ -55,7 +55,7 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
   - [] Testes para a funcionalidade esperada do controlador
   - [] Testes para falhas do controlador
 
-- [] Criar módulo de configurações para .env
+- [x] Criar módulo de configurações para .env
 - [] Implementar migrações com Alembic
 - [] Refatorar código para deploy:
 

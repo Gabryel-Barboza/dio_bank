@@ -54,3 +54,11 @@ class PasswordAuthenticationFailException(Exception):
 
     def __init__(self):
         self.msg = 'Invalid password inserted, try again!'
+
+
+# Exceção para token de acesso inválido
+class CredentialsTokenException(Exception):
+    """Raised when an invalid access token is used to authenticate."""
+
+    def __init__(self):
+        self.msg = 'Invalid authentication token, please signin to your user again!'
