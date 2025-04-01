@@ -32,10 +32,8 @@ async def session():
 async def populate_db(
     session: Session,
 ):
-    from random import randint
-
-    from src.controllers import account_controller, user_controller
-    from src.models import AccountCreateModel, TransactionCreateModel, UserCreateModel
+    from src.models import Account, AccountType, Transaction, TransactionType, User
+    from src.utils.cryptography import hash_password
 
     users = [
         {
@@ -57,32 +55,46 @@ async def populate_db(
             'password': '654321',
         },
     ]
-    accounts = [{'account_type': 'poupança'}, {}]
     transactions = [
-        {'transaction_type': 'depósito', 'transaction_value': 1000.00},
-        {'transaction_type': 'depósito', 'transaction_value': 200.00},
-        {'transaction_type': 'depósito', 'transaction_value': 50.00},
-        {'transaction_type': 'saque', 'transaction_value': 100.00},
-        {'transaction_type': 'saque', 'transaction_value': 50.00},
-        {'transaction_type': 'saque', 'transaction_value': 300.00},
+        {'transaction_type': TransactionType.deposito, 'transaction_value': 1000.00},
+        {'transaction_type': TransactionType.deposito, 'transaction_value': 200.00},
+        {'transaction_type': TransactionType.deposito, 'transaction_value': 50.00},
+        {'transaction_type': TransactionType.saque, 'transaction_value': 100.00},
+        {'transaction_type': TransactionType.saque, 'transaction_value': 50.00},
+        {'transaction_type': TransactionType.saque, 'transaction_value': 300.00},
     ]
 
     for i in range(0, 3):
-        user = UserCreateModel.model_validate(users[i])
-        await user_controller.create_user(session=session, user=user)
+        user = users[i]
+        password = hash_password(user['password'])
 
-        for j in range(0, randint(1, 2)):
-            account = AccountCreateModel.model_validate(accounts[j])
-            await account_controller.create_account(
-                session=session,
-                account=account,
-                user_id=i + 1,
-            )
+        user.update(password)
+        user = User(**user)
+        session.add(user)
 
-        transaction = TransactionCreateModel.model_validate(transactions[0])
-        await account_controller.create_transaction(
-            session=session, id_account=i + 1, transaction=transaction
-        )
+    session.add_all(
+        [
+            Account(id_user=1),
+            Account(id_user=1, account_type=AccountType.poupanca),
+            Account(id_user=2),
+            Account(id_user=2),
+            Account(id_user=3),
+        ]
+    )
+
+    session.add_all(
+        [
+            Transaction(id_account=1, **transactions[0]),
+            Transaction(id_account=1, **transactions[3]),
+            Transaction(id_account=2, **transactions[0]),
+            Transaction(id_account=2, **transactions[3]),
+            Transaction(id_account=3, **transactions[1]),
+            Transaction(id_account=4, **transactions[0]),
+            Transaction(id_account=5, **transactions[1]),
+            Transaction(id_account=5, **transactions[5]),
+        ]
+    )
+    session.commit()
 
 
 # Criando cliente de requisições
@@ -90,7 +102,10 @@ async def populate_db(
 async def client(db, populate_db):
     from src.main import app
 
-    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+    }
 
     async with AsyncClient(
         base_url='http://test',
@@ -98,3 +113,15 @@ async def client(db, populate_db):
         headers=headers,
     ) as client:
         yield client
+
+
+# Criando access_token para autenticação de rotas
+@pytest_asyncio.fixture
+async def access_token(client: AsyncClient):
+    data = {'username': 'gabryel', 'password': '123456'}
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    response = await client.post('/auth/login', data=data, headers=headers)
+    access_token = response.json()['access_token']
+
+    return access_token

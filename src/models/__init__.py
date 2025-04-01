@@ -12,6 +12,7 @@ from .transaction_model import (
     TransactionType,
 )
 from .user_model import (
+    AccessToken,
     User,
     UserCreateModel,
     UserPatchUpdateModel,

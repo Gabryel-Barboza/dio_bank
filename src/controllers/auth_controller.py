@@ -24,8 +24,8 @@ auth = AuthService()
 )
 async def login(
     *,
-    session: Session = Depends(get_session),
     login_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    session: Session = Depends(get_session),
 ) -> AccessToken:
     try:
         username = login_data.username
