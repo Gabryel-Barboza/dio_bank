@@ -10,7 +10,7 @@ O objetivo deste desafio é desenvolver uma API com as seguintes funcionalidades
 
 - [x] **Cadastro de Transações**: Permita o cadastro de transações bancárias, como depósitos e saques.
 - [x] **Exibição de Extrato**: Implemente um endpoint para exibir o extrato de uma conta, mostrando todas \* as transações realizadas.
-- [] **Autenticação com JWT**: Utilize JWT (JSON Web Tokens) para garantir que apenas usuários autenticados possam acessar os endpoints que exigem autenticação.
+- [x] **Autenticação com JWT**: Utilize JWT (JSON Web Tokens) para garantir que apenas usuários autenticados possam acessar os endpoints que exigem autenticação.
 
 ## Requisitos do Desafio
 
@@ -52,7 +52,7 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [] Aprimorar conformidade com OpenAPI 3
 - [] Criar bateria de testes com Pytest
 
-  - [] Testes para a funcionalidade esperada do controlador
+  - [x] Testes para a funcionalidade esperada do controlador
   - [] Testes para falhas do controlador
 
 - [x] Criar módulo de configurações para .env
