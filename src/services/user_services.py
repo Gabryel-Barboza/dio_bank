@@ -1,8 +1,9 @@
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from src.models.user_model import User
 from src.utils.cryptography import hash_password
-from src.utils.exceptions import RegistryNotFoundException
+from src.utils.exceptions import BankIntegrityFailException, RegistryNotFoundException
 
 
 class UserService:
@@ -16,7 +17,7 @@ class UserService:
             user = session.get(User, user_id)
 
             if not user:
-                raise RegistryNotFoundException
+                raise RegistryNotFoundException('User not found!')
 
             return user
         # Recuperar todos
@@ -30,11 +31,16 @@ class UserService:
     async def insert_user(session: Session, user: dict) -> User:
         user.update(hash_password(user['password']))  # Convertendo senha para hash
         user: User = User.model_validate(user)  # Convertendo para model User
-
-        session.add(user)
-        session.commit()
-
-        session.refresh(user)
+        try:
+            session.add(user)
+            session.commit()
+        except IntegrityError as exc:
+            print(exc)
+            msg = str(exc).split('\n')[0].split(')')[1]
+            msg, constr_error = msg.split(':')
+            raise BankIntegrityFailException(msg, constr_error)
+        else:
+            session.refresh(user)
 
         return user
 
@@ -44,14 +50,20 @@ class UserService:
         user = session.get(User, user_id)
 
         if not user:
-            raise RegistryNotFoundException
+            raise RegistryNotFoundException('User not found!')
 
         if fields.get('password', None):
             fields.update(hash_password(fields['password']))
 
         user.sqlmodel_update(fields)
-        session.add(user)
-        session.commit()
+        try:
+            session.add(user)
+            session.commit()
+        except IntegrityError as exc:
+            print(exc)
+            msg = str(exc).split('\n')[0].split(')')[1]
+            msg, constr_error = msg.split(':')
+            raise BankIntegrityFailException(msg, constr_error)
 
         return
 
@@ -61,7 +73,7 @@ class UserService:
         user = session.get(User, user_id)
 
         if not user:
-            raise RegistryNotFoundException
+            raise RegistryNotFoundException('User not found!')
 
         session.delete(user)
         session.commit()

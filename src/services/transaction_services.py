@@ -58,7 +58,7 @@ class TransactionServices:
         account = session.get(Account, id_account)
 
         if not account:
-            raise RegistryNotFoundException
+            raise RegistryNotFoundException('Account not found!')
 
         transaction_type = transaction['transaction_type'].value
         transaction_value = transaction['transaction_value']
@@ -79,14 +79,14 @@ class TransactionServices:
             transaction = session.get(Transaction, transaction_id)
 
             if not transaction:
-                raise RegistryNotFoundException
+                raise RegistryNotFoundException('Transaction not found!')
 
             return transaction
         elif id_account:
             account = session.get(Account, id_account)
 
             if not account:
-                raise RegistryNotFoundException
+                raise RegistryNotFoundException('Account not found!')
 
             return account.transactions
 

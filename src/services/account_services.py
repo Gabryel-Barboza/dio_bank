@@ -20,14 +20,14 @@ class AccountServices:
             account = session.get(Account, id_account)
 
             if not account:
-                raise RegistryNotFoundException
+                raise RegistryNotFoundException('Account not found!')
 
             return account
         elif user_id:  # Recuperar contas de único usuário
             user = session.get(User, user_id)
 
             if not user:
-                raise RegistryNotFoundException
+                raise RegistryNotFoundException('User not found!')
 
             return user.accounts
         else:  # Recuperar todas as contas
@@ -51,7 +51,6 @@ class AccountServices:
 
         session.add(account)
         session.commit()
-
         session.refresh(account)
 
         return account
@@ -61,9 +60,10 @@ class AccountServices:
         account = session.get(Account, id_account)
 
         if not account:
-            raise RegistryNotFoundException
+            raise RegistryNotFoundException('Account not found!')
 
         account.sqlmodel_update(fields)
+
         session.add(account)
         session.commit()
 
@@ -74,7 +74,7 @@ class AccountServices:
         account = session.get(Account, id_account)
 
         if not account:
-            raise RegistryNotFoundException
+            raise RegistryNotFoundException('Account not found!')
 
         session.delete(account)
         session.commit()

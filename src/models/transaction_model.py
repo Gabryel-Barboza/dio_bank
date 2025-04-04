@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 
@@ -25,6 +26,7 @@ class TransactionBaseModel(SQLModel):
 
 class Transaction(TransactionBaseModel, table=True):
     id_transaction: int | None = Field(default=None, primary_key=True)
+    created_at: datetime | None = Field(default=datetime.now(timezone.utc))
 
     account: Account | None = Relationship(back_populates='transactions')
 
@@ -35,3 +37,4 @@ class TransactionCreateModel(TransactionBaseModel):
 
 class TransactionPublicModel(TransactionBaseModel):
     id_transaction: int
+    created_at: datetime

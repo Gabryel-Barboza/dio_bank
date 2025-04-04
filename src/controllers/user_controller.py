@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 
 from src.controllers.auth_controller import get_user_authentication
 from src.databases.bank_db import Session, get_session
@@ -11,7 +11,6 @@ from src.models.user_model import (
     UserPublicModel,
 )
 from src.services.user_services import UserService
-from src.utils.exceptions import RegistryNotFoundException
 
 router = APIRouter(prefix='/users', tags=['User'])
 usr_service = UserService()
@@ -31,6 +30,7 @@ async def get_users(
     token: Annotated[str, Depends(get_user_authentication)],
 ) -> list[UserPublicAccountsModel] | None:
     users = await usr_service.read_users(session, skip, limit)
+
     return users
 
 
@@ -44,14 +44,9 @@ async def get_user_by_id(
     user_id: int,
     token: Annotated[str, Depends(get_user_authentication)],
 ) -> UserPublicAccountsModel | None:
-    try:
-        user = await usr_service.read_users(session, user_id=user_id)
-    except RegistryNotFoundException:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
-        )
-    else:
-        return user
+    user = await usr_service.read_users(session, user_id=user_id)
+
+    return user
 
 
 @router.post(
@@ -79,12 +74,7 @@ async def update_user(
     token: Annotated[str, Depends(get_user_authentication)],
     user: UserCreateModel,
 ) -> None:
-    try:
-        await usr_service.update_user(session, user_id, user.model_dump())
-    except RegistryNotFoundException:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
-        )
+    await usr_service.update_user(session, user_id, user.model_dump())
 
     return
 
@@ -100,14 +90,9 @@ async def update_user_fields(
     token: Annotated[str, Depends(get_user_authentication)],
     fields: UserPatchUpdateModel,
 ) -> None:
-    try:
-        await usr_service.update_user(
-            session, user_id, fields.model_dump(exclude_unset=True)
-        )
-    except RegistryNotFoundException:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
-        )
+    await usr_service.update_user(
+        session, user_id, fields.model_dump(exclude_unset=True)
+    )
 
     return
 
@@ -122,10 +107,6 @@ async def delete_user(
     user_id: int,
     token: Annotated[str, Depends(get_user_authentication)],
 ) -> None:
-    try:
-        await usr_service.delete_user(session, user_id)
-    except RegistryNotFoundException:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail='User not found!'
-        )
+    await usr_service.delete_user(session, user_id)
+
     return
