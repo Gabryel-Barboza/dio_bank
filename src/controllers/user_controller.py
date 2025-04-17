@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 
@@ -41,7 +42,7 @@ async def get_users(
 async def get_user_by_id(
     *,
     session: Session = Depends(get_session),
-    user_id: int,
+    user_id: UUID,
     token: Annotated[str, Depends(get_user_authentication)],
 ) -> UserPublicAccountsModel | None:
     user = await usr_service.read_users(session, user_id=user_id)
@@ -70,7 +71,7 @@ async def create_user(
 async def update_user(
     *,
     session: Session = Depends(get_session),
-    user_id: int,
+    user_id: UUID,
     token: Annotated[str, Depends(get_user_authentication)],
     user: UserCreateModel,
 ) -> None:
@@ -86,7 +87,7 @@ async def update_user(
 async def update_user_fields(
     *,
     session: Session = Depends(get_session),
-    user_id: int,
+    user_id: UUID,
     token: Annotated[str, Depends(get_user_authentication)],
     fields: UserPatchUpdateModel,
 ) -> None:
@@ -104,7 +105,7 @@ async def update_user_fields(
 async def delete_user(
     *,
     session: Session = Depends(get_session),
-    user_id: int,
+    user_id: UUID,
     token: Annotated[str, Depends(get_user_authentication)],
 ) -> None:
     await usr_service.delete_user(session, user_id)

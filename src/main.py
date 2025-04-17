@@ -11,6 +11,7 @@ from .utils.exceptions import (
     ExceedUserAccountsException,
     InsufficientBalanceException,
     InvalidOperationException,
+    NonPositiveTransactionValueException,
     PasswordAuthenticationFailException,
     RegistryNotFoundException,
     UsernameAuthenticationFailException,
@@ -29,7 +30,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title='DIO Bank API',
     summary='API to make transactional requests, also manipulate users and accounts.',
-    version='0.0.2',
+    version='0.1.0',
     description="""
 
 """,
@@ -43,6 +44,9 @@ app = FastAPI(
 app.include_router(user_controller.router)
 app.include_router(account_controller.router)
 app.include_router(auth_controller.router)
+
+# App run with fastapi dev src/main.py or
+# uvicorn src.main:app --reload [--lifespan on # debug de lifespan]
 
 # Handling exceptions
 
@@ -59,6 +63,13 @@ async def user_not_found_handler(request: Request, exc: UserNotFoundException):
 
 @app.exception_handler(InvalidOperationException)
 async def invalid_operation_handler(request: Request, exc: InvalidOperationException):
+    return JSONResponse(content=exc.msg, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+@app.exception_handler(NonPositiveTransactionValueException)
+async def non_positive_transaction_value_handler(
+    request: Request, exc: NonPositiveTransactionValueException
+):
     return JSONResponse(content=exc.msg, status_code=status.HTTP_400_BAD_REQUEST)
 
 

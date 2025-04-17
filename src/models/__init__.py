@@ -1,7 +1,6 @@
 from .account_model import (
     Account,
     AccountCreateModel,
-    AccountPatchUpdateModel,
     AccountPublicModel,
     AccountType,
 )
@@ -21,6 +20,7 @@ from .user_model import (
 )
 
 __all__ = [
+    'AccessToken',
     'User',
     'UserCreateModel',
     'UserPatchUpdateModel',
@@ -32,7 +32,6 @@ __all__ = [
     'TransactionType',
     'Account',
     'AccountCreateModel',
-    'AccountPatchUpdateModel',
     'AccountPublicModel',
     'AccountType',
 ]

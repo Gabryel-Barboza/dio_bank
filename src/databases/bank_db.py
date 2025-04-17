@@ -4,7 +4,7 @@ from src.settings import settings
 
 # Instanciando banco
 database_url = settings.database_url
-debug = settings.debug
+debug = settings.debug_mode
 connect_args = {}
 pool = None
 

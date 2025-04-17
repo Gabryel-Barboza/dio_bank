@@ -1,11 +1,12 @@
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 from sqlmodel import Column, Field, Relationship, SQLModel
 from sqlmodel import Enum as sa_enum
 
-# Resolve circular import, constante True apenas para IDEs. Com o interpretador direto é False
+# Resolve circular import, constante True apenas para IDEs. Com o interpretador Python direto é False
 if TYPE_CHECKING:
     from .transaction_model import Transaction
     from .user_model import User
@@ -21,13 +22,14 @@ class AccountBaseModel(SQLModel):
         default=AccountType.corrente,
         sa_column=Column(sa_enum(AccountType), nullable=False),
     )
-    balance: Decimal = Field(default=Decimal(0), decimal_places=2)
+    balance: Decimal = Field(default=Decimal(), decimal_places=2)
 
 
 class Account(AccountBaseModel, table=True):
-    id_account: int | None = Field(default=None, primary_key=True)
-    id_user: int | None = Field(
-        default=None, foreign_key='user.id_user', ondelete='CASCADE'
+    id: UUID | None = Field(default_factory=uuid4, primary_key=True)
+    account_no: int = Field(nullable=False)
+    id_user: UUID | None = Field(
+        default=None, foreign_key='user.id', ondelete='CASCADE'
     )
 
     user: 'User' = Relationship(back_populates='accounts')
@@ -44,12 +46,7 @@ class AccountCreateModel(AccountBaseModel):
     pass
 
 
-class AccountPatchUpdateModel(SQLModel):
-    id_user: int | None = None
-    account_type: str | None = None
-    balance: Decimal | None = None
-
-
 class AccountPublicModel(AccountBaseModel):
-    id_account: int
-    id_user: int
+    account_no: int
+    id_user: UUID
+    id: UUID

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlmodel import Session, select
 
 from src.models.account_model import Account
@@ -14,10 +16,15 @@ class AccountServices:
 
     @staticmethod
     async def read_accounts(
-        session: Session, *, user_id: int = None, id_account: int = None
+        session: Session,
+        skip: int = 0,
+        limit: int = 10,
+        *,
+        user_id: UUID = None,
+        account_id: UUID = None,
     ) -> list[Account] | Account | None:
-        if id_account:  # Recuperar única conta
-            account = session.get(Account, id_account)
+        if account_id:  # Recuperar única conta
+            account = session.get(Account, account_id)
 
             if not account:
                 raise RegistryNotFoundException('Account not found!')
@@ -31,22 +38,24 @@ class AccountServices:
 
             return user.accounts
         else:  # Recuperar todas as contas
-            accounts = session.exec(select(Account)).all()
+            accounts = session.exec(select(Account).offset(skip).limit(limit)).all()
 
             return accounts
 
     async def insert_account(
-        self, session: Session, account: dict, user_id: int
+        self, session: Session, account: dict, user_id: UUID
     ) -> Account:
         user = session.get(User, user_id)
 
         if not user:
             raise UserNotFoundException
 
-        if len(user.accounts) >= self.MAX_ACCOUNTS:
+        total_user_accounts = len(user.accounts)
+
+        if total_user_accounts >= self.MAX_ACCOUNTS:
             raise ExceedUserAccountsException(self.MAX_ACCOUNTS)
 
-        account.update({'id_user': user_id})
+        account.update({'id_user': user_id, 'account_no': total_user_accounts + 1})
         account = Account.model_validate(account)
 
         session.add(account)
@@ -56,22 +65,8 @@ class AccountServices:
         return account
 
     @staticmethod
-    async def update_account(session: Session, fields: dict, id_account: int) -> None:
-        account = session.get(Account, id_account)
-
-        if not account:
-            raise RegistryNotFoundException('Account not found!')
-
-        account.sqlmodel_update(fields)
-
-        session.add(account)
-        session.commit()
-
-        return
-
-    @staticmethod
-    async def delete_account(session: Session, id_account: int) -> None:
-        account = session.get(Account, id_account)
+    async def delete_account(session: Session, account_id: UUID) -> None:
+        account = session.get(Account, account_id)
 
         if not account:
             raise RegistryNotFoundException('Account not found!')

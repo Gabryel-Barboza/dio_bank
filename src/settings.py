@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
-    debug: bool = False
+    debug_mode: bool = False
 
     model_config = SettingsConfigDict(
         env_file='.env',

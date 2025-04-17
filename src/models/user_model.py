@@ -1,4 +1,5 @@
 from datetime import date
+from uuid import UUID, uuid4
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -20,10 +21,9 @@ class UserBaseModel(SQLModel):
 class User(UserBaseModel, table=True):
     # Type hint == attribute type, None == nullable
 
-    # Valor padrão None/Null, caso contrário ainda será necessário passar o dado na instância
-    # Gerado pelo database, não pela instância
-    id_user: int | None = Field(default=None, primary_key=True)
-    # Após hash a senha possui tamanho maior
+    # Gerado pelo database, não pela instância, None e valor padrão para ser opcional na requisição
+    id: UUID | None = Field(default_factory=uuid4, primary_key=True)
+    # Após hash a senha possui tamanho maior, portanto o limite padrão é atribuído
     password: str = Field()
 
     accounts: list['Account'] = Relationship(
@@ -44,14 +44,14 @@ class UserPatchUpdateModel(UserBaseModel):
     password: str | None = None
 
 
-# Modelo com os atributos obrigatórios que são retornados para o cliente
+# Modelo com os atributos obrigatórios que são retornados para o cliente, define a ordem dos atributos
 class UserPublicModel(SQLModel):
-    id_user: int
     fullname: str
     username: str
     cpf: str
     address: str | None
     birth_date: date | None
+    id: UUID
 
 
 # Modelo com a lista de contas, evita recursão com Pydantic

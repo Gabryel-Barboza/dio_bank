@@ -32,6 +32,17 @@ class InvalidOperationException(Exception):
         self.msg = msg or 'Invalid operation selected! Please try again...'
 
 
+# Exceção para valor de transação não positivo
+class NonPositiveTransactionValueException(Exception):
+    """Raised when a value less than or equal to zero is received in a transaction."""
+
+    def __init__(self, msg: str = None):
+        self.msg = (
+            msg
+            or 'Invalid transaction value received, minimum value must be greater than zero!'
+        )
+
+
 # Exceção para saldo insuficiente para saque
 class InsufficientBalanceException(Exception):
     """Raised when the selected account doesn't have sufficient balance to finish a withdraw."""

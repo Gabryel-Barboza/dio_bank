@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
@@ -10,7 +12,7 @@ class UserService:
     # Método para recuperar usuários
     @staticmethod
     async def read_users(
-        session: Session, skip: int = 0, limit: int = 10, user_id: int = None
+        session: Session, skip: int = 0, limit: int = 10, user_id: UUID = None
     ) -> list[User] | User | None:
         # Recuperar por ID
         if user_id:
@@ -46,7 +48,7 @@ class UserService:
 
     # Método para atualizar usuários
     @staticmethod
-    async def update_user(session: Session, user_id: int, fields: dict) -> None:
+    async def update_user(session: Session, user_id: UUID, fields: dict) -> None:
         user = session.get(User, user_id)
 
         if not user:
@@ -69,7 +71,7 @@ class UserService:
 
     # Método para remover usuários.
     @staticmethod
-    async def delete_user(session: Session, user_id: int) -> None:
+    async def delete_user(session: Session, user_id: UUID) -> None:
         user = session.get(User, user_id)
 
         if not user:

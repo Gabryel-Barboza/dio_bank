@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from uuid import UUID
 
 from sqlmodel import Column, Field, Relationship, SQLModel
 from sqlmodel import Enum as sa_enum
@@ -15,8 +16,8 @@ class TransactionType(Enum):
 
 class TransactionBaseModel(SQLModel):
     # Se conta for deletada, remova todas as transações associadas. Apropriado para interações diretas com db, diferente de cascade_delete em Relationship no qual o código que é responsável pela remoção automática
-    id_account: int | None = Field(
-        default=None, foreign_key='account.id_account', ondelete='CASCADE'
+    id_account: UUID | None = Field(
+        default=None, foreign_key='account.id', ondelete='CASCADE'
     )
     transaction_type: TransactionType = Field(
         sa_column=Column(sa_enum(TransactionType), nullable=False)
@@ -25,7 +26,8 @@ class TransactionBaseModel(SQLModel):
 
 
 class Transaction(TransactionBaseModel, table=True):
-    id_transaction: int | None = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
+    transaction_no: int = Field(nullable=False)
     created_at: datetime | None = Field(default=datetime.now(timezone.utc))
 
     account: Account | None = Relationship(back_populates='transactions')
@@ -36,5 +38,6 @@ class TransactionCreateModel(TransactionBaseModel):
 
 
 class TransactionPublicModel(TransactionBaseModel):
-    id_transaction: int
     created_at: datetime
+    transaction_no: int
+    id: int

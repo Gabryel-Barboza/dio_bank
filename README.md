@@ -35,7 +35,6 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Refatorar camadas para modularizar código
 - [x] Criar exception de registro não encontrado para controladores
 - [x] Alterar modelos com os tipos de dados apropriados para campos específicos
-- [] ? Unificar rotas de user Put e Patch ?
 - [x] Alterar modelos adicionando relacionamentos
 - [x] Criar schemas das rotas de User para refletir as entradas e saídas, com apenas os parâmetros necessários em cada rota
 - [x] Implementar campo de senha em usuários e controlador de autenticação e login
@@ -43,12 +42,17 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Criar método de autenticação necessária para rotas
 - [x] Implementar rotas para manipular contas de usuário
 - [x] Criar exceptions para criação de contas com usuários inexistentes e para limite de contas excedido
-- [] Criar exceptions para integridade do banco de dados
+- [x] Criar exceptions para integridade do banco de dados
 - [x] Implementar camada para transação a partir do controlador de Account
 - [x] Implementar métodos de saque e depósito no controlador de Account
 - [x] Implementar decorador para criar log de transação
-- [] Implementar identificação global com UUID e identificação local com ID
-- [] Criar handler principal para exceptions comuns
+- [x] Implementar identificação global com UUID e identificação local com ID
+- [x] Alterar modelo de transações para procurar somente por ID dentro de uma conta
+- [x] Implementar offset e limit em read accounts e read transactions
+- [x] Criar handler principal para exceptions comuns
+- [] Impedir erros por valores negativos nos respectivos métodos de busca por int (Query params são tratados já)
+- [] Criar alguma limitação para a quantidade de transações retornadas
+- [] Validar usuário para ser sem espaços ou caixa alta e senha sem espaços
 - [] Aprimorar conformidade com OpenAPI 3
 - [] Criar bateria de testes com Pytest
 
@@ -61,6 +65,7 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 
   - [] Padronizar estrutura do projeto com pacotes
   - [] Instalar dependências adicionais para PostgreSQL
+  - [] Implementar CORS
   - [] Testar projeto em contêiner com PostgreSQL
 
 - [] Criar mais tipos de transação/operação

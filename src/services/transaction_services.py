@@ -1,5 +1,6 @@
 import functools
 from decimal import Decimal
+from uuid import UUID
 
 from sqlmodel import Session, select
 
@@ -8,6 +9,7 @@ from src.models.transaction_model import Transaction
 from src.utils.exceptions import (
     InsufficientBalanceException,
     InvalidOperationException,
+    NonPositiveTransactionValueException,
     RegistryNotFoundException,
 )
 
@@ -29,22 +31,25 @@ class TransactionServices:
         session.add(account)
 
     @staticmethod
-    def create_transaction_log() -> None:
+    def create_transaction_log() -> Transaction:
         # Decoradores não podem ser corrotinas, são executados na avaliação de código fonte
         # Portanto, criar uma função síncrona wrapper para uma função assíncrona
         def wrapper(func):
             @functools.wraps(func)
             async def wrapped(*args, **kwargs):
-                # Atualizar transação com o ID da conta recebido
-                kwargs['transaction'].update({'id_account': kwargs['id_account']})
-
-                transaction = kwargs['transaction']
                 session: Session = kwargs['session']
+                # Atualizar transação com o ID da conta recebido
+                kwargs['transaction'].update({'id_account': kwargs['account_id']})
+
+                await func(*args, **kwargs)
+                # Objeto recebe a atualização no método
+                transaction = kwargs['transaction']
                 log = Transaction.model_validate(transaction)
 
                 session.add(log)
-                await func(*args, **kwargs)
                 session.commit()
+
+                return log
 
             return wrapped
 
@@ -54,14 +59,21 @@ class TransactionServices:
     async def create_transaction(
         self, *, session: Session, transaction: dict, **kwargs
     ) -> None:
-        id_account = transaction['id_account']
-        account = session.get(Account, id_account)
+        account_id = transaction['id_account']
+        account = session.get(Account, account_id)
 
         if not account:
             raise RegistryNotFoundException('Account not found!')
 
         transaction_type = transaction['transaction_type'].value
         transaction_value = transaction['transaction_value']
+
+        if transaction_value <= 0:
+            raise NonPositiveTransactionValueException
+
+        # Atualizar transação com numeração de acordo com a conta
+        # Por ser o mesmo objeto em referência no dicionário a alteração é refletida
+        transaction.update({'transaction_no': len(account.transactions) + 1})
 
         match transaction_type:
             case 'saque':
@@ -73,24 +85,38 @@ class TransactionServices:
 
     @staticmethod
     async def read_transactions(
-        session: Session, *, id_account: int = None, transaction_id: int = None
+        session: Session,
+        skip: int = 0,
+        limit: int = 10,
+        *,
+        account_id: UUID = None,
+        transaction_no: int = None,
     ) -> list[Transaction] | Transaction | None:
-        if transaction_id:
-            transaction = session.get(Transaction, transaction_id)
-
-            if not transaction:
-                raise RegistryNotFoundException('Transaction not found!')
-
-            return transaction
-        elif id_account:
-            account = session.get(Account, id_account)
+        if account_id:
+            account = session.get(Account, account_id)
 
             if not account:
                 raise RegistryNotFoundException('Account not found!')
 
-            return account.transactions
+            # ! Possui potencial para retornar uma grande quantidade de registros do banco
+            transactions = account.transactions
+
+            if transaction_no:
+                try:
+                    transaction = transactions[transaction_no - 1]
+                except IndexError:
+                    transaction = None
+
+                if not transaction:
+                    raise RegistryNotFoundException('Transaction not found!')
+
+                return transaction
+
+            return transactions
 
         else:
-            accounts = session.exec(select(Transaction)).all()
+            transactions = session.exec(
+                select(Transaction).offset(skip).limit(limit)
+            ).all()
 
-            return accounts
+            return transactions
