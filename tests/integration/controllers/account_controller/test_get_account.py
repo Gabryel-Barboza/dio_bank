@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
+from pytest_lazy_fixtures import lf
 
 
 async def test_get_accounts_success(client: AsyncClient, access_token: str):
@@ -12,7 +12,7 @@ async def test_get_accounts_success(client: AsyncClient, access_token: str):
     content = response.json()
 
     assert response.status_code == HTTPStatus.OK
-    assert len(content) == 5
+    assert len(content) == 3
 
 
 async def test_get_accounts_no_authentication(client: AsyncClient):
@@ -21,9 +21,9 @@ async def test_get_accounts_no_authentication(client: AsyncClient):
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-@pytest.mark.parametrize('user_id', [1, 2, 3])
+@pytest.mark.parametrize('user_id', [lf('user_ids'), lf('user_ids')])
 async def test_get_user_accounts_success(
-    client: AsyncClient, access_token: str, user_id: int
+    client: AsyncClient, access_token: str, user_id: str
 ):
     response = await client.get(
         f'/users/{user_id}/accounts/',
@@ -37,7 +37,7 @@ async def test_get_user_accounts_success(
 
 
 async def test_get_user_accounts_fail(
-    client: AsyncClient, access_token: str, user_id: int = None
+    client: AsyncClient, access_token: str, user_id: str = None
 ):
     response = await client.get(
         f'/users/{user_id}/accounts/',
@@ -48,19 +48,21 @@ async def test_get_user_accounts_fail(
 
 
 async def test_get_user_accounts_no_authentication(
-    client: AsyncClient, user_id: int = 1
+    client: AsyncClient, user_id: str = '152f14e5eae33b97fafd0158f7c74a84'
 ):
     response = await client.get(f'/users/{user_id}/accounts/')
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-@pytest.mark.parametrize('id_account', (1, 2, 3, 4, 5))
+@pytest.mark.parametrize(
+    'account_id', [lf('account_ids'), lf('account_ids'), lf('account_ids')]
+)
 async def test_get_account_success(
-    client: AsyncClient, access_token: str, id_account: int
+    client: AsyncClient, access_token: str, account_id: str
 ):
     response = await client.get(
-        f'/users/accounts/{id_account}/',
+        f'/users/accounts/{account_id}/',
         headers={'Authorization': f'Bearer {access_token}'},
     )
     content = response.json()
@@ -70,17 +72,19 @@ async def test_get_account_success(
 
 
 async def test_get_account_fail(
-    client: AsyncClient, access_token: str, id_account: int = None
+    client: AsyncClient, access_token: str, account_id: str = None
 ):
     response = await client.get(
-        f'/users/accounts/{id_account}/',
+        f'/users/accounts/{account_id}/',
         headers={'Authorization': f'Bearer {access_token}'},
     )
 
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
-async def test_get_account_no_authentication(client: AsyncClient, id_account: int = 1):
-    response = await client.get(f'/users/accounts/{id_account}/')
+async def test_get_account_no_authentication(
+    client: AsyncClient, account_id: str = '152f14e5eae33b97fafd0158f7c74a84'
+):
+    response = await client.get(f'/users/accounts/{account_id}/')
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED

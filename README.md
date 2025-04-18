@@ -58,6 +58,9 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 
   - [x] Testes para a funcionalidade esperada do controlador
   - [] Testes para falhas do controlador
+  - [] Atualizar testes para versão nova
+  - [] Criar fixtures para recuperar ids de usuários e contas criadas
+  - [] Usar fixtures dentro de parametrize com pytest lazyfixture
 
 - [x] Criar módulo de configurações para .env
 - [] Implementar migrações com Alembic

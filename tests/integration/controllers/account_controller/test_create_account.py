@@ -2,13 +2,13 @@ from http import HTTPStatus
 from random import randint
 
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
+from pytest_lazy_fixtures import lf
 
 
-@pytest.mark.parametrize('user_id', (1, 2, 3))
+@pytest.mark.parametrize('user_id', [lf('user_ids'), lf('user_ids')])
 async def test_create_account_success(
-    client: AsyncClient, access_token: str, user_id: int
+    client: AsyncClient, access_token: str, user_id: str
 ):
     rand = randint(1, 2)
     account = {} if rand == 1 else {'account_type': 'poupança'}

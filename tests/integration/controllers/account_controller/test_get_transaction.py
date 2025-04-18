@@ -1,13 +1,16 @@
 from http import HTTPStatus
 
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
+from pytest_lazy_fixtures import lf
 
 
-@pytest.mark.parametrize('account_id', (1, 2, 3))
+@pytest.mark.parametrize(
+    'account_id',
+    [lf('account_ids'), lf('account_ids')],
+)
 async def test_get_account_transactions_success(
-    client: AsyncClient, access_token: str, account_id: int
+    client: AsyncClient, access_token: str, account_id: str
 ):
     response = await client.get(
         f'/users/accounts/{account_id}/transactions/',
@@ -20,7 +23,7 @@ async def test_get_account_transactions_success(
 
 
 async def test_get_account_transactions_no_id_fail(
-    client: AsyncClient, access_token: str, account_id: int = None
+    client: AsyncClient, access_token: str, account_id: str = None
 ):
     response = await client.get(
         f'/users/accounts/{account_id}/transactions/',
@@ -31,7 +34,7 @@ async def test_get_account_transactions_no_id_fail(
 
 
 async def test_get_account_transactions_no_authentication(
-    client: AsyncClient, account_id: int = int
+    client: AsyncClient, account_id: str = 0
 ):
     response = await client.get(f'/users/accounts/{account_id}/transactions/')
 
@@ -39,13 +42,14 @@ async def test_get_account_transactions_no_authentication(
 
 
 @pytest.mark.parametrize(
-    'account_id,transaction_id', [(1, 1), (1, 2), (2, 1), (2, 2), (3, 1)]
+    'account_id,transaction_no',
+    [(lf('account_ids'), 1), (lf('account_ids'), 1), (lf('account_ids'), 1)],
 )
 async def test_get_account_transaction_success(
-    client: AsyncClient, access_token: str, account_id: int, transaction_id: int
+    client: AsyncClient, access_token: str, account_id: str, transaction_no: int
 ):
     response = await client.get(
-        f'/users/accounts/{account_id}/transactions/{transaction_id}',
+        f'/users/accounts/{account_id}/transactions/{transaction_no}',
         headers={'Authorization': f'Bearer {access_token}'},
     )
     content = response.json()
@@ -54,14 +58,14 @@ async def test_get_account_transaction_success(
     assert content is not None
 
 
-async def test_get_account_transaction_no_transaction_id_fail(
+async def test_get_account_transaction_no_transaction_number_fail(
     client: AsyncClient,
     access_token: str,
-    account_id: int = 1,
-    transaction_id: int = None,
+    account_id: str = lf('account_ids'),
+    transaction_no: int = None,
 ):
     response = await client.get(
-        f'/users/accounts/{account_id}/transactions/{transaction_id}',
+        f'/users/accounts/{account_id}/transactions/{transaction_no}',
         headers={'Authorization': f'Bearer {access_token}'},
     )
 
@@ -70,11 +74,11 @@ async def test_get_account_transaction_no_transaction_id_fail(
 
 async def test_get_account_transaction_no_authentication(
     client: AsyncClient,
-    account_id: int = 1,
-    transaction_id: int = 1,
+    account_id: str = '152f14e5eae33b97fafd0158f7c74a84',
+    transaction_no: int = 1,
 ):
     response = await client.get(
-        f'/users/accounts/{account_id}/transactions/{transaction_id}'
+        f'/users/accounts/{account_id}/transactions/{transaction_no}'
     )
 
     assert response.status_code == HTTPStatus.UNAUTHORIZED
