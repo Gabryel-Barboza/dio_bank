@@ -1,15 +1,13 @@
-from sqlmodel import Session, SQLModel, create_engine, text
+from sqlmodel import Session, create_engine, text
 
 from src.settings import settings
 
 # Instanciando banco
 database_url = settings.database_url
 debug = settings.debug_mode
-connect_args = {}
+connect_args = {'check_same_thread': False} if 'sqlite' in settings.database_url else {}
 pool = None
 
-if 'sqlite' in settings.database_url:
-    connect_args = {'check_same_thread': False}
 
 if settings.environment == 'testing':
     from sqlmodel import StaticPool
@@ -21,12 +19,10 @@ engine = create_engine(
 )
 
 
-def create_db():
+def connect_db():
     from src.models.account_model import Account  # noqa
     from src.models.user_model import User  # noqa
     from src.models.transaction_model import Transaction  # noqa
-
-    SQLModel.metadata.create_all(engine)
 
     if 'sqlite' in settings.database_url:
         # Habilita suporte para restrições com Foreign key no SQLite

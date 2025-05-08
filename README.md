@@ -50,20 +50,22 @@ Para a realização deste desafio, você deve atender aos seguintes requisitos t
 - [x] Alterar modelo de transações para procurar somente por ID dentro de uma conta
 - [x] Implementar offset e limit em read accounts e read transactions
 - [x] Criar handler principal para exceptions comuns
-- [] Impedir erros por valores negativos nos respectivos métodos de busca por int (Query params são tratados já)
+- [x] Criar middleware para separar exceptions do main
+- [x] Impedir erros por valores negativos nos respectivos métodos de busca por int (Query params são tratados já)
 - [] Criar alguma limitação para a quantidade de transações retornadas
-- [] Validar usuário para ser sem espaços ou caixa alta e senha sem espaços
+- [x] Tratar usuário para ser sem espaços ou caixa alta e senha sem espaços
 - [] Aprimorar conformidade com OpenAPI 3
+- [] Documentar projeto corretamente
 - [] Criar bateria de testes com Pytest
 
   - [x] Testes para a funcionalidade esperada do controlador
   - [] Testes para falhas do controlador
-  - [] Atualizar testes para versão nova
+  - [x] Atualizar testes para versão nova
   - [] Criar fixtures para recuperar ids de usuários e contas criadas
   - [] Usar fixtures dentro de parametrize com pytest lazyfixture
 
 - [x] Criar módulo de configurações para .env
-- [] Implementar migrações com Alembic
+- [x] Implementar migrações com Alembic
 - [] Refatorar código para deploy:
 
   - [] Padronizar estrutura do projeto com pacotes

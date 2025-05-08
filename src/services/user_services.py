@@ -31,6 +31,10 @@ class UserService:
     # Método para criar usuários
     @staticmethod
     async def insert_user(session: Session, user: dict) -> User:
+        # Tratamento de valores recebidos, retirar espaços e deixar username em minúsculas
+        user['username'] = user['username'].replace(' ', '').lower()
+        user['password'] = user['password'].replace(' ', '')
+
         user.update(hash_password(user['password']))  # Convertendo senha para hash
         user: User = User.model_validate(user)  # Convertendo para model User
         try:

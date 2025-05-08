@@ -24,6 +24,8 @@ class AuthService:
     async def authenticate_user(
         self, session: Session, username: str, password: str
     ) -> None:
+        username = username.replace(' ', '').lower()
+        password = password.replace(' ', '')
         user = session.exec(select(User).where(User.username == username)).one_or_none()
 
         if not user:

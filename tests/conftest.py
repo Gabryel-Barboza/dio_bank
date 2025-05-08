@@ -11,9 +11,11 @@ settings.database_url = 'sqlite:///'
 @pytest_asyncio.fixture()
 async def db(request):
     # Permite carregar as configurações de settings antes de criar a engine na importação
-    from src.databases.bank_db import create_db, engine
+    from src.databases.bank_db import connect_db, engine
 
-    create_db()
+    connect_db()
+
+    SQLModel.metadata.create_all(engine)
     yield
     SQLModel.metadata.drop_all(engine)
 
