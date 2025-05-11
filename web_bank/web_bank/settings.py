@@ -12,18 +12,21 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+from dotenv import dotenv_values
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Alterar caminho para o arquivo .env, a partir de web_bank como raiz.
+CONFIG = dotenv_values(BASE_DIR / '../.env_django')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4%%c^az%&x4008-56cl!balh24li=e8b5)y7xubv3nid!!e58k'
-
+SECRET_KEY = CONFIG.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = CONFIG.get('DEBUG_MODE') or False
 
 ALLOWED_HOSTS = []
 
@@ -74,8 +77,15 @@ WSGI_APPLICATION = 'web_bank.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': CONFIG.get('DATABASE_NAME'),
+        'USER': CONFIG.get('DATABASE_USER'),
+        'PASSWORD': CONFIG.get('DATABASE_PASSWORD'),
+        'HOST': CONFIG.get('DATABASE_HOST'),
+        'PORT': CONFIG.get('DATABASE_PORT'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
